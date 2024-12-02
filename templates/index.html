@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Extractor</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+
+        /* Centering the content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Flex container for the form */
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Input styling */
+        input[type="text"] {
+            width: 100%;
+            max-width: 500px; /* Maximum width of the search bar */
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        /* Button styling */
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result section styling */
+        h2 {
+            margin-top: 30px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: #444;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                flex-direction: column;
+            }
+
+            input[type="text"] {
+                max-width: 90%;
+                margin-bottom: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Medicine Name Extractor</h1>
+        <div class="form-container">
+            <input type="text" id="prompt" name="prompt" placeholder="Enter the prompt..." required>
+            <button type="submit" id="submitBtn">Extract Medicines</button>
+        </div>
+
+        <h2>Extracted Medicines:</h2>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Handling form submission with AJAX
+        document.querySelector('#submitBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const prompt = document.querySelector('#prompt').value;
+            fetch('/extract_medicines', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `prompt=${encodeURIComponent(prompt)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.querySelector('#result');
+                if (data.medications.length > 0) {
+                    resultDiv.innerHTML = `<ul>${data.medications.map(med => `<li>${med}</li>`).join('')}</ul>`;
+                } else {
+                    resultDiv.innerHTML = 'No medicines found.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        });
+    </script>
+</body>
+</html>
